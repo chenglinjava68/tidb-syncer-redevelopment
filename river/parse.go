@@ -2,14 +2,16 @@ package river
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"strconv"
 	"strings"
 
+	"github.com/juju/errors"
 	log "github.com/sirupsen/logrus"
+	"hash/crc32"
 	"tidb-syncer/utils/canal"
 	"tidb-syncer/utils/schema"
-	"github.com/juju/errors"
-	"hash/crc32"
 )
 
 /**
@@ -336,42 +338,86 @@ func (r *River) makeDeleteRequest(e *canal.RowsEvent) ([]*DmlMsg, error) {
 }
 
 // Returns the correct field form in the sql statement based on the field type
-func getStrByColType(t int, v interface{}) (string, error) {
+func getStrByColType(t int, value interface{}) (string, error) {
 	switch t {
 	case schema.TYPE_NUMBER, schema.TYPE_FLOAT, schema.TYPE_ENUM, schema.TYPE_SET:
-		if v == nil {
+		if value == nil {
 			return "null", nil
 		}else{
-			return fmt.Sprintf("%v", v), nil
+			return fmt.Sprintf("%v", value), nil
 		}
 	case schema.TYPE_STRING, schema.TYPE_DATE, schema.TYPE_DATETIME, schema.TYPE_TIMESTAMP, schema.TYPE_TIME:
-		if v == nil{
+		if value == nil{
 			return "null", nil
 		}else{
-			//switch v.(type) {
-			//case string:
-			//	return fmt.Sprintf("%s", v.(string)), nil
-			//case int64:
-			//	return fmt.Sprintf("%s", v.(int64)), nil
-			//}
-			return fmt.Sprintf("%s", v.(string)), nil
+			switch value.(type) {
+			case float64:
+				ft := value.(float64)
+				value = strconv.FormatFloat(ft, 'f', -1, 64)
+			case float32:
+				ft := value.(float32)
+				value = strconv.FormatFloat(float64(ft), 'f', -1, 64)
+			case int:
+				it := value.(int)
+				value = strconv.Itoa(it)
+			case uint:
+				it := value.(uint)
+				value = strconv.Itoa(int(it))
+			case int8:
+				it := value.(int8)
+				value = strconv.Itoa(int(it))
+			case uint8:
+				it := value.(uint8)
+				value = strconv.Itoa(int(it))
+			case int16:
+				it := value.(int16)
+				value = strconv.Itoa(int(it))
+			case uint16:
+				it := value.(uint16)
+				value = strconv.Itoa(int(it))
+			case int32:
+				it := value.(int32)
+				value = strconv.Itoa(int(it))
+			case uint32:
+				it := value.(uint32)
+				value = strconv.Itoa(int(it))
+			case int64:
+				it := value.(int64)
+				value = strconv.FormatInt(it, 10)
+			case uint64:
+				it := value.(uint64)
+				value = strconv.FormatUint(it, 10)
+			case string:
+				value = value.(string)
+			case []byte:
+				value = string(value.([]byte))
+			default:
+				newValue, _ := json.Marshal(value)
+				value = string(newValue)
+			}
+			return fmt.Sprintf("%s", value), nil
 		}
 	case schema.TYPE_JSON:
-		if v == nil{
+		if value == nil{
 			return "null", nil
 		}else{
-			return fmt.Sprintf("%s", string(v.([]uint8))), nil
+			return fmt.Sprintf("%s", string(value.([]uint8))), nil
 		}
 	case schema.TYPE_BIT:
-		if v == nil{
+		if value == nil{
 			return "null", nil
 		}else{
-			return fmt.Sprintf("b'%b'", v), nil
+			return fmt.Sprintf("b'%b'", value), nil
 		}
 	default:
 		return "", errors.Errorf("unknow colomn type %v\n", t)
 	}
 }
+
+
+
+
+
 
 // generate delete slice of sql statement then packaging message
 func (r *River) GetDelSql(head string, rule *Rule, e *canal.RowsEvent) ([]*DmlMsg, error) {

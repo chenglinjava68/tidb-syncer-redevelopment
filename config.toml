@@ -13,10 +13,6 @@ meta = "./syncer.meta"
 #replicate-do-db = ["eric"]
 
 [from]
-#host = "dev.mysql.003.master.hualala.com"
-#user = "root"
-#password = "root"
-#port = 3306
 host = "127.0.0.1"
 user = "root"
 password = "root"
@@ -41,7 +37,9 @@ port = 4000
 [[replicate-do-table]]
 db-name ="db_supply_chain_basic"
 tbl-name = "tbl_chain_goods_category"
-
+[[replicate-do-table]]
+db-name ="db_supply_chain_basic"
+tbl-name = "tbl_chain_goods"
 #[[route-rules]]
 #pattern-schema = "eric"
 #target-schema = "test"
