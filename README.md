@@ -13,9 +13,9 @@ Thanks [siddontang](https://github.com/siddontang "title") for providing some gr
 
 
 
-improvement ?
+Improvement 
 ====================
-tidb-syncer-redevelopment  reslove diffeerent table structs
+tidb-syncer-redevelopment reslove  mysql---> tidb  diffeerent table structs
 
 
 thanks for the origin author  lovewin99
