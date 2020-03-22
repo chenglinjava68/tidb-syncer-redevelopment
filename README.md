@@ -1,6 +1,7 @@
-What is tidb-syncer?
+﻿What is tidb-syncer?
 ====================
 tidb-syncer is a service syncing your MySQL data into Tidb automatically. The tidb-syncer completely mimics the function of pingcap's syncer v1.0.0.
+
 
 How to use?
 ====================
@@ -10,8 +11,18 @@ Acknowledgments
 ====================
 Thanks [siddontang](https://github.com/siddontang "title") for providing some great open source tools.
 
+
+
+improvement ?
+====================
+tidb-syncer-redevelopment  reslove diffeerent table structs
+
+
+thanks for the origin author  lovewin99
+
+https://github.com/lovewin99/tidb-syncer
+
+
 Feedback
 ====================
 tidb-syncer is still in development, your feedback is very welcome.
-
-Gmail: [wangxy086@gmail.com](mailto:wangxy086@gmail.com)
